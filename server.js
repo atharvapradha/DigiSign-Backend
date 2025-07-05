@@ -18,12 +18,26 @@ dotenv.config();
 // ✅ Connect to MongoDB
 connectDB();
 
-// ✅ Enable CORS
-app.use(cors({
-  origin: 'http://localhost:5173', // ✅ Adjust this based on frontend
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
+// ✅ Updated CORS to allow both local and deployed frontend
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://digi-sign-frontend.vercel.app',
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+  })
+);
 
 // ✅ Middleware
 app.use(express.json());
