@@ -2,16 +2,14 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
-import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// POST /register
+// ✅ Register Route
 router.post('/register', async (req, res) => {
   const { name, username, email, password } = req.body;
 
   try {
-    // ✅ Check if user already exists by email or username
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
       return res.status(409).json({ msg: 'Account already exists' });
@@ -29,9 +27,9 @@ router.post('/register', async (req, res) => {
     // ✅ Send token in HTTP-only cookie
     res.cookie('token', token, {
       httpOnly: true,
-      secure: false, // true in production with HTTPS
-      sameSite: 'Lax',
-      maxAge: 60 * 60 * 1000, // 1 hour
+      secure: true, // ✅ Must be true for HTTPS (Render)
+      sameSite: 'None', // ✅ Required for cross-site cookies
+      maxAge: 60 * 60 * 1000,
     });
 
     res.status(201).json({ message: 'Registration successful' });
@@ -41,7 +39,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// POST /login
+// ✅ Login Route
 router.post('/login', async (req, res) => {
   const { email, password, username } = req.body;
 
@@ -62,8 +60,8 @@ router.post('/login', async (req, res) => {
     // ✅ Send token in HTTP-only cookie
     res.cookie('token', token, {
       httpOnly: true,
-      secure: false,
-      sameSite: 'Lax',
+      secure: true,
+      sameSite: 'None',
       maxAge: 60 * 60 * 1000,
     });
 

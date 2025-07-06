@@ -8,7 +8,7 @@ import authRoutes from './routes/auth.js';
 import protectedRoutes from './routes/protected.js';
 import docRoutes from './routes/docRoutes.js';
 import fileRoutes from './routes/fileroutes.js';
-import signRoutes from './routes/signRoute.js'; // ✅ Import signature route
+import signRoutes from './routes/signRoute.js';
 
 import { connectDB } from './config/dbconfigrations.js';
 
@@ -27,7 +27,6 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl)
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -45,21 +44,20 @@ app.use(cookieParser());
 
 // ✅ Serve static files
 app.use('/uploads', express.static('uploads'));
-app.use('/signed', express.static('signed')); // ✅ Optional: serve signed PDFs
+app.use('/signed', express.static('signed'));
 
 // ✅ Routes
 app.use('/api', authRoutes);
 app.use('/api', protectedRoutes);
 app.use('/api/docs', docRoutes);
 app.use('/api', fileRoutes);
-app.use('/api/sign', signRoutes); // ✅ Signature route added here
+app.use('/api/sign', signRoutes);
 
 // ✅ Health check
 app.get('/', (req, res) => {
   res.send('API is working!');
 });
 
-// ✅ Start server
 const PORT = 8000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
