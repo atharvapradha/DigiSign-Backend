@@ -1,26 +1,26 @@
 import express from 'express';
 import upload from '../middleware/multerConfig.js';
-import FileModel from '../models/FileModel.js'; // ✅ Mongoose model that includes `user`
-import authMiddleware from '../middleware/authMiddleware.js'; // ✅ Protects route and gives req.user
+import FileModel from '../models/FileModel.js';
+import authMiddleware from '../middleware/authMiddleware.js'; // ✅ Protect route
 
 const router = express.Router();
 
-// ✅ POST /api/docs/upload - Protected and saves user info
+// ✅ POST /api/docs/upload - Protected route
 router.post('/upload', authMiddleware, upload.single('pdf'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    // ✅ Optional: Debug log to verify user
-    console.log('🔐 Uploading file for user:', req.user); // Should log { id: '...' }
+    // ✅ Debug: Log user ID
+    console.log('🔐 Uploading file for user:', req.user); // Should show { id: '...' }
 
-    // ✅ Create new file document with user ID
+    // ✅ Save file info with user ID
     const newFile = new FileModel({
-      user: req.user.id, // ✅ req.user.id is set by updated authMiddleware
+      user: req.user.id,
       originalName: req.file.originalname,
       filename: req.file.filename,
-      fileUrl: req.file.path, // Optional: Use file path as a reference
+      fileUrl: req.file.path,
       uploadDate: new Date()
     });
 

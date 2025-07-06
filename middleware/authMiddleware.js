@@ -16,11 +16,11 @@ const authMiddleware = (req, res, next) => {
   }
 
   try {
-    // ✅ Verify token
-    const decoded = jwt.verify(token, 'your_jwt_secret'); // Use env in real apps
+    // ✅ Verify token (use dotenv for secret in production)
+    const decoded = jwt.verify(token, 'your_jwt_secret');
     console.log("✅ Decoded token payload:", decoded);
 
-    // ✅ Attach the user ID as req.user.id
+    // ✅ Attach user ID to request
     req.user = { id: decoded.userId };
 
     next();
